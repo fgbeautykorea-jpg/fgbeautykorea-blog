@@ -3,10 +3,10 @@
 <article class="card">
   <a href="{{ post.url }}" class="card__link">
     <div class="card__thumb">
-      <img src="{{ post.data.thumb_image or site.seo.og_image }}" alt="{{ post.data.thumb_alt or post.data.title }}" loading="lazy" sizes="(max-width: 768px) 100vw, 380px">
+      {%- set th = post | thumbOf %}<img src="{{ th.src }}" alt="{{ post.data.thumb_alt or post.data.title }}"{% if th.generated %} eleventy:ignore width="1200" height="630"{% endif %} loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 380px">
     </div>
     <div class="card__body">
-      <p class="card__label">{% if post.data.lab_no %}<span>{{ post.data.lab_no | labNo }}</span>{% endif %}{% if pc %}<span>{{ pc.name }}</span>{% endif %}</p>
+      <p class="card__label"><span>{{ post.page.fileSlug | labNo }}</span>{% if pc %}<span>{{ pc.name }}</span>{% endif %}</p>
       <h3 class="card__title">{{ post.data.title }}</h3>
       {%- if post.data.excerpt %}<p class="card__excerpt">{{ post.data.excerpt }}</p>{% endif %}
       <span class="card__more">자세히 보기 <span aria-hidden="true">→</span></span>

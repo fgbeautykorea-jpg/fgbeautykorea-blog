@@ -37,23 +37,5 @@ const logoForOg = await sharp(full).resize({ height: 380 }).png().toBuffer();
 await sharp({ create: { width: 1200, height: 630, channels: 3, background: BG } })
   .composite([{ input: logoForOg, gravity: "center" }]).png({ compressionLevel: 9 }).toFile("src/assets/og-default.png");
 
-// 5) Per-post "lab note" thumbnails: node tools/make-images.mjs writes one for every entry below.
-const notes = [
-  { file: "src/assets/uploads/lab-001-niacinamide.png", no: "LAB NOTE 001", en: "Niacinamide × Cheonnyeoncho", ko: "나이아신아마이드 × 천년초", sub: "강화와 회복, 두 성분의 역할 나누기" },
-];
-const smallLogo = await sharp(full).resize({ height: 120 }).png().toBuffer();
-fs.mkdirSync("src/assets/uploads", { recursive: true });
-for (const n of notes) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-  <rect width="1200" height="630" fill="${BG}"/>
-  <g stroke="#e8e6e1" stroke-width="1">${Array.from({ length: 20 }, (_, i) => `<line x1="${60 * i}" y1="0" x2="${60 * i}" y2="630"/>`).join("")}${Array.from({ length: 11 }, (_, i) => `<line x1="0" y1="${60 * i}" x2="1200" y2="${60 * i}"/>`).join("")}</g>
-  <text x="80" y="118" font-family="Consolas, monospace" font-size="26" letter-spacing="4" fill="${TEAL}">${n.no}</text>
-  <text x="80" y="250" font-family="Segoe UI Light, Segoe UI, Arial" font-weight="300" font-size="64" fill="${INK}">${n.en}</text>
-  <text x="80" y="350" font-family="Malgun Gothic, sans-serif" font-weight="700" font-size="60" fill="${INK}">${n.ko}</text>
-  <rect x="80" y="392" width="120" height="4" fill="${TEAL}"/>
-  <text x="80" y="450" font-family="Malgun Gothic, sans-serif" font-size="32" fill="#6b6b6b">${n.sub}</text>
-</svg>`;
-  await sharp(Buffer.from(svg)).composite([{ input: smallLogo, left: 1200 - 80 - Math.round((fw / fh) * 120), top: 630 - 80 - 120 }])
-    .png({ compressionLevel: 9 }).toFile(n.file);
-}
+// Post thumbnails are drawn at build time by lib/thumbs.js (from the admin fields).
 console.log("images ok");

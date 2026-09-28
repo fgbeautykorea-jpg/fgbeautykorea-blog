@@ -17,9 +17,9 @@ permalink: /index.html
 <section class="wrap block" aria-labelledby="featured">
   <h2 id="featured" class="sr-only">최신 연구일지</h2>
   <a class="feature" href="{{ latest.url }}">
-    <div class="feature__img"><img src="{{ latest.data.thumb_image or site.seo.og_image }}" alt="{{ latest.data.thumb_alt or latest.data.title }}" loading="eager" sizes="(max-width: 900px) 100vw, 620px"></div>
+    <div class="feature__img">{%- set th = latest | thumbOf %}<img src="{{ th.src }}" alt="{{ latest.data.thumb_alt or latest.data.title }}"{% if th.generated %} eleventy:ignore width="1200" height="630"{% endif %} loading="eager" fetchpriority="high" sizes="(max-width: 900px) 100vw, 620px"></div>
     <div class="feature__body">
-      <p class="card__label">{% if latest.data.lab_no %}<span>{{ latest.data.lab_no | labNo }}</span>{% endif %}<span>최신 글</span></p>
+      <p class="card__label"><span>{{ latest.page.fileSlug | labNo }}</span><span>최신 글</span></p>
       <p class="feature__title">{{ latest.data.title }}</p>
       <p class="feature__desc">{{ latest | postDesc }}</p>
       <span class="card__more">자세히 보기 <span aria-hidden="true">→</span></span>

@@ -4,7 +4,7 @@
 
 backend:
   name: github
-  repo: OWNER/seo-geo-blog
+  repo: FGBEAUTYKOREA-jpg/fgbeautykorea-blog
   branch: main
   commit_messages:
     create: "관리자: '{{slug}}' 추가"
@@ -43,6 +43,7 @@ collections:
     preview_path: "blog/{{fields.category}}/{{slug}}/"
     fields:
       - { label: "제목 (H1)", name: title, widget: string, hint: "글 맨 위 큰 제목. 메인 키워드를 앞쪽에 넣어 주세요." }
+      - { label: "연구일지 번호", name: lab_no, widget: number, value_type: int, min: 1, required: false, hint: "LAB NOTE 001 의 숫자. 비우면 발행 순서대로 자동으로 붙어요" }
       - { label: "메인 키워드", name: keyword, widget: string, required: false, hint: "이 글로 검색되고 싶은 말 하나. 예) robots.txt AI 크롤러 — 제목·설명·첫 문단에 들어갔는지 점검표가 확인해요" }
       - label: "주소 (영문)"
         name: slug
@@ -69,7 +70,7 @@ collections:
         name: body
         widget: markdown
         pattern: ['^(?![\s\S]*!\[\s*\]\()(?![\s\S]*(?:^|\n)#\s)[\s\S]*$', "사진 설명(대체 텍스트)이 비었거나 H1(# 제목)이 있어요. 사진을 눌러 대체 텍스트를 채우고, 소제목은 H2(##)부터 쓰세요."]
-        hint: "① 소제목(H2)은 질문형으로 — 예) llms.txt는 어떤 역할을 합니까? ② 소제목 바로 아래 첫 문단에 40~60단어로 답부터 ③ 자주 묻는 질문은 H3 '질문?' + 답 → FAQ 자동 ④ '~하는 방법/순서' 소제목 아래 번호 목록 → HowTo 자동 ⑤ 표·리스트·인용(>) 박스 적극 활용 ⑥ 사진은 + 버튼 → 이미지, 대체 텍스트 필수"
+        hint: "자주 묻는 질문은 툴바 + → '자주 묻는 질문'으로 넣으세요. ① 소제목(H2)은 질문형으로 — 예) llms.txt는 어떤 역할을 합니까? ② 소제목 바로 아래 첫 문단에 40~60단어로 답부터 ③ 자주 묻는 질문은 H3 '질문?' + 답 → FAQ 자동 ④ '~하는 방법/순서' 소제목 아래 번호 목록 → HowTo 자동 ⑤ 표·리스트·인용(>) 박스 적극 활용 ⑥ 사진은 + 버튼 → 이미지, 대체 텍스트 필수"
       - label: "관련 글 직접 연결"
         name: related
         widget: relation
@@ -91,8 +92,12 @@ collections:
           - { label: "검색 제외, 링크는 따라감 (noindex, follow)", value: "noindex, follow" }
           - { label: "검색 제외, 링크도 무시 (noindex, nofollow)", value: "noindex, nofollow" }
         hint: "보통 '자동'. 본문이 기준 글자 수('사이트 설정')보다 짧으면 얇은 콘텐츠로 보고 검색에서 뺍니다."
-      - { label: "대표 이미지", name: thumb_image, widget: image, required: false, hint: "글 상단·목록 카드·카카오톡/SNS 공유 이미지로 쓰여요 (가로형, 1200×630 권장). 비우면 기본 공유 이미지" }
-      - { label: "대표 이미지 설명 (alt)", name: thumb_alt, widget: string, required: false, hint: "대표 이미지를 넣었다면 필수. 사진에 무엇이 보이는지 한 문장으로" }
+      # 썸네일: 아래 글씨만 채우면 'LAB NOTE' 썸네일이 자동으로 그려져요 (lib/thumbs.js). 오른쪽 미리보기에 바로 보여요.
+      - { label: "썸네일 영문 (선택)", name: thumb_en, widget: string, required: false, hint: "얇은 영문 한 줄. 예) Niacinamide × Cheonnyeoncho — 25자 안쪽이 예뻐요" }
+      - { label: "썸네일 한글 큰 제목", name: thumb_ko, widget: string, required: false, hint: "굵은 한글. 예) 나이아신아마이드 × 천년초 — 15자 안쪽 권장. 비우면 메인 키워드가 들어가요" }
+      - { label: "썸네일 한 줄 설명 (선택)", name: thumb_sub, widget: string, required: false, hint: "회색 작은 글씨. 예) 강화와 회복, 두 성분의 역할 나누기" }
+      - { label: "직접 만든 썸네일 이미지 (선택)", name: thumb_image, widget: image, required: false, hint: "올리면 자동 썸네일 대신 이 이미지를 써요 (가로형 1200×630). 보통은 비워 두세요" }
+      - { label: "직접 만든 썸네일 설명 (alt)", name: thumb_alt, widget: string, required: false, hint: "직접 이미지를 올렸다면 필수. 이미지에 무엇이 보이는지 한 문장으로" }
 
   # ═════════════════════════ 페이지 (소개, 개인정보처리방침 등)
   - name: pages

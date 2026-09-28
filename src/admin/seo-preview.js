@@ -43,7 +43,36 @@ const css = `
 .og__u{font-size:12px;color:#8c8c8c;margin-top:4px}
 .seo__links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .seo__links a{font-size:12.5px;font-weight:600;color:#0066cc;background:#fff;border-radius:99px;padding:5px 10px;text-decoration:none}
+/* LAB NOTE thumbnail — same layout as lib/thumbs.js (1200×630), scaled with container units */
+.lab{container-type:inline-size;position:relative;aspect-ratio:1200/630;overflow:hidden;border:1px solid #e7e4de;border-radius:12px;font-family:Pretendard,system-ui,sans-serif;color:#1f1f1f;
+  background-color:#fbfaf7;background-image:linear-gradient(#ebe8e2 1px,transparent 1px),linear-gradient(90deg,#ebe8e2 1px,transparent 1px);background-size:5cqw 5cqw}
+.lab img.lab__custom{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lab__in{position:absolute;left:6.67cqw;right:6.67cqw;top:7.2cqw}
+.lab__no{margin:0;font-weight:500;font-size:2.17cqw;letter-spacing:.42cqw;color:#3aa3ad}
+.lab__en{margin:5.4cqw 0 0;font-weight:300;font-size:5.1cqw;line-height:1.15;white-space:nowrap;overflow:hidden}
+.lab__ko{margin:2.4cqw 0 0;font-weight:700;font-size:5.3cqw;line-height:1.15;white-space:nowrap;overflow:hidden}
+.lab__bar{width:10cqw;height:.34cqw;background:#5fc0c8;margin-top:2.9cqw}
+.lab__sub{margin:3.4cqw 0 0;font-size:2.67cqw;color:#6b6b6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lab__logo{position:absolute;right:6.67cqw;bottom:5.8cqw;width:14.2cqw}
+.lab-note{margin:0 0 6px;font:12px/1.5 Pretendard,system-ui,sans-serif;color:#7a7a7a}
+.og .lab{border:0;border-radius:0}
 `;
+
+// Live copy of the build-time thumbnail, so editors see it while typing.
+function LabThumb({ d, getAsset, no }) {
+  if (d.thumb_image) {
+    return h("div", { className: "lab" }, h("img", { className: "lab__custom", src: String(getAsset(d.thumb_image) || d.thumb_image), alt: "" }));
+  }
+  return h("div", { className: "lab" },
+    h("div", { className: "lab__in" },
+      h("p", { className: "lab__no" }, no),
+      d.thumb_en ? h("p", { className: "lab__en" }, d.thumb_en) : null,
+      h("p", { className: "lab__ko", style: d.thumb_en ? null : { marginTop: "4cqw" } }, d.thumb_ko || d.keyword || d.title || "썸네일 한글 큰 제목"),
+      h("div", { className: "lab__bar" }),
+      d.thumb_sub ? h("p", { className: "lab__sub" }, d.thumb_sub) : null),
+    h("img", { className: "lab__logo", src: "/assets/logo-full.png", alt: "" }));
+}
+const labText = (d) => (d.lab_no ? `LAB NOTE ${String(d.lab_no).padStart(3, "0")}` : "LAB NOTE (번호 자동)");
 
 function Checklist({ d, getAsset }) {
   const s = ctx.site ? { ...ctx.site.seo, url: String(ctx.site.url).replace(/\/$/, "") } : { url: "", title_suffix: "", og_image: "/assets/og-default.png" };
@@ -56,7 +85,6 @@ function Checklist({ d, getAsset }) {
   const color = sc >= 85 ? "#1a7f37" : sc >= 60 ? "#bf8700" : "#cf222e";
   const groups = [...new Set(res.map((x) => x.group))];
   const url = s.url + postPath(d);
-  const thumb = d.thumb_image ? String(getAsset(d.thumb_image) || d.thumb_image) : s.og_image;
   const enc = encodeURIComponent(url);
 
   return h("section", { className: "seo" },
@@ -76,7 +104,7 @@ function Checklist({ d, getAsset }) {
       h("div", { className: "seo__card" },
         h("h3", null, "카카오톡 · SNS 공유 미리보기"),
         h("div", { className: "og" },
-          h("div", { className: "og__img", style: { backgroundImage: `url("${thumb}")` } }),
+          h(LabThumb, { d, getAsset, no: labText(d) }),
           h("div", { className: "og__b" },
             h("p", { className: "og__t" }, d.title || "제목"),
             h("p", { className: "og__d" }, seoDescription(d)),
@@ -93,6 +121,9 @@ function Checklist({ d, getAsset }) {
       h("a", { href: "/admin/seo-report.html", target: "_blank" }, "사이트 전체 리포트")));
 }
 
+const dot = (v) => { if (!v) return ""; const x = new Date(v); return isNaN(x) ? String(v) : `${x.getFullYear()}.${String(x.getMonth() + 1).padStart(2, "0")}.${String(x.getDate()).padStart(2, "0")}`; };
+
+// Same structure and classes as src/_includes/layouts/post.njk, so the preview looks like the live post.
 const PostPreview = createClass({
   componentDidMount() { ready.then(() => this.forceUpdate()); },
   render() {
@@ -102,17 +133,43 @@ const PostPreview = createClass({
     d.slug = d.slug || entry.get("slug") || "";
     const author = ctx.authors.find((a) => a.id === d.author);
     const cat = ctx.categories.find((c) => c.id === d.category);
+    const row = (k, v) => (v ? h("div", null, h("dt", null, k), h("dd", null, v)) : null);
     return h("div", null,
       h(Checklist, { d, getAsset }),
-      h("main", { className: "post" },
-        h("article", { className: "post__inner" },
-          h("nav", { className: "crumbs" }, "홈", cat ? ` › ${cat.name}` : ""),
-          cat ? h("span", { className: "post__cat" }, cat.name) : null,
+      h("p", { className: "lab-note" }, "▼ 실제 글 화면 미리보기"),
+      h("article", { className: "post" },
+        h("header", { className: "post__head wrap wrap--post", style: { paddingTop: 0 } },
+          h("nav", { className: "crumbs" }, "홈 › ", cat ? cat.name : "카테고리 없음"),
+          h("p", { className: "post__no" }, labText(d)),
           h("h1", { className: "post__title" }, d.title || "제목"),
-          h("p", { className: "post__meta" }, h("strong", null, author ? author.name : "작성자 없음"), author && author.role ? ` · ${author.role}` : ""),
-          d.summary ? h("div", { className: "post__summary" }, widgetFor("summary")) : null,
-          h("div", { className: "post__body" }, widgetFor("body")))));
+          h("dl", { className: "record" },
+            row("작성", author ? `${author.name}${author.role ? " · " + author.role : ""}` : "작성자를 골라 주세요"),
+            row("발행", dot(d.date)),
+            row("수정", dot(d.updated)),
+            row("분류", cat && cat.name),
+            (d.tags || []).length ? h("div", { className: "record__tags" }, h("dt", null, "태그"), h("dd", null, ...(d.tags || []).map((t, i) => h("a", { key: i }, "#" + t)))) : null)),
+        h("figure", { className: "post__cover wrap wrap--wide" }, h(LabThumb, { d, getAsset, no: labText(d) })),
+        h("div", { className: "wrap wrap--post" },
+          d.summary ? h("section", { className: "post__summary" }, h("p", { className: "post__summary-label" }, "SUMMARY · 핵심 요약"), widgetFor("summary")) : null,
+          h("div", { className: "prose" }, widgetFor("body")))));
   },
+});
+
+// 툴바 + → '자주 묻는 질문': inserts "### 질문?" + answer — the exact shape the FAQ cards and FAQPage data expect.
+CMS.registerEditorComponent({
+  id: "faq",
+  label: "자주 묻는 질문 (Q&A)",
+  fields: [
+    { name: "q", label: "질문 (물음표로 끝내기)", widget: "string" },
+    { name: "a", label: "답변", widget: "text" },
+  ],
+  pattern: /^### ([^\n]+?[?？])\n\n([^\n#][^\n]*)$/m,
+  fromBlock: (m) => ({ q: m[1], a: m[2] }),
+  toBlock: ({ q = "", a = "" }) => {
+    const qq = q.trim().replace(/[?？]?$/, "?");
+    return `### ${qq}\n\n${a.trim().replace(/\s*\n\s*/g, " ")}`;
+  },
+  toPreview: ({ q = "", a = "" }) => `<h3>${q}</h3><p>${a}</p>`,
 });
 
 CMS.registerPreviewStyle(css, { raw: true });

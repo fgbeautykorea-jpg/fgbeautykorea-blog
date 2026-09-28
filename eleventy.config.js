@@ -2,6 +2,7 @@ import markdownIt from "markdown-it";
 import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
 import { pageSeo, headTags, relatedPosts, redirectLines, isIndexable, readBody, findById, toc, oneLine } from "./lib/seo.js";
 import { runAudit } from "./lib/audit.js";
+import { buildThumbs, labNumbers, labLabel } from "./lib/thumbs.js";
 import { seoDescription, plainText } from "./src/admin/seo-core.js";
 
 // One sentence per line in the editor; a blank line starts a new paragraph.
@@ -53,7 +54,6 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("readMinutes", (inputPath) => Math.max(1, Math.round(plainText(readBody(inputPath)).replace(/\s+/g, "").length / 500)));
   eleventyConfig.addFilter("md", (s) => md.render(String(s ?? "")));
   eleventyConfig.addFilter("oneLine", oneLine);
-  eleventyConfig.addFilter("labNo", (n) => (n ? `LAB NOTE ${String(n).padStart(3, "0")}` : ""));
   eleventyConfig.addFilter("firstChar", (s) => Array.from(String(s ?? "").trim())[0] || "·");
   eleventyConfig.addFilter("xml", (s) =>
     String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]));
@@ -78,11 +78,27 @@ export default function (eleventyConfig) {
 
   // The audit runs after the build, so keep a handle on the global data and the posts.
   let g = null;
+  let labs = new Map();
   eleventyConfig.addCollection("posts", (api) => {
     const posts = api.getFilteredByGlob("src/posts/*.md").sort((a, b) => b.date - a.date);
     const d = (posts[0] || api.getAll()[0] || {}).data || {};
     g = { site: d.site, authors: d.authors || {}, categories: d.categories || {}, posts };
+    labs = labNumbers(posts.map((p) => ({ slug: p.page.fileSlug, date: p.date, lab_no: p.data.lab_no })));
     return posts;
+  });
+
+  // ───────── LAB NOTE thumbnails (lib/thumbs.js): drawn before each build for posts without a 대표 이미지.
+  eleventyConfig.on("eleventy.before", async ({ dir }) => {
+    try { await buildThumbs({ outDir: `${dir.output}/img/thumbs` }); } catch (e) { console.warn("[썸네일] 실패:", e.message); }
+  });
+  // "LAB NOTE 001" — the admin's 연구일지 번호, or the publishing order when it is empty.
+  eleventyConfig.addFilter("labNo", (slug) => labLabel(labs.get(slug)));
+  // Card/cover image: the uploaded 대표 이미지, else the generated thumbnail (already 1200×630 WebP,
+  // so the <img> carries eleventy:ignore + its size and the image plugin leaves it alone).
+  eleventyConfig.addFilter("thumbOf", (item) => {
+    const d = item.data || item;
+    const slug = item.page ? item.page.fileSlug : item.fileSlug;
+    return d.thumb_image ? { src: d.thumb_image, generated: false } : { src: `/img/thumbs/${slug}.webp`, generated: true };
   });
   // Posts search engines may index (not thin, not marked noindex) → sitemap, RSS, llms.txt.
   eleventyConfig.addCollection("indexablePosts", (api) =>

@@ -13,7 +13,7 @@ layout: layouts/base.njk
       <a href="/">홈</a><span aria-hidden="true">›</span>
       {%- if cat %}<a href="/blog/{{ cat.id }}/">{{ cat.name }}</a>{% else %}<a href="/blog/">전체 글</a>{% endif %}
     </nav>
-    {%- if lab_no %}<p class="post__no">{{ lab_no | labNo }}</p>{% endif %}
+    <p class="post__no">{{ page.fileSlug | labNo }}</p>
     <h1 class="post__title">{{ title }}</h1>
     {#- 연구일지 기록표: 작성 · 발행 · 수정 · 분류 · 태그 #}
     <dl class="record">
@@ -26,9 +26,7 @@ layout: layouts/base.njk
     </dl>
   </header>
 
-  {%- if thumb_image %}
-  <figure class="post__cover wrap wrap--wide"><img src="{{ thumb_image }}" alt="{{ thumb_alt or title }}" loading="eager" fetchpriority="high" sizes="(max-width: 960px) 100vw, 960px"></figure>
-  {%- endif %}
+  <figure class="post__cover wrap wrap--wide">{%- set th = { thumb_image: thumb_image, fileSlug: page.fileSlug } | thumbOf %}<img src="{{ th.src }}" alt="{{ thumb_alt or (title + ' 썸네일') }}"{% if th.generated %} eleventy:ignore width="1200" height="630"{% endif %} loading="eager" fetchpriority="high" sizes="(max-width: 960px) 100vw, 960px"></figure>
 
   <div class="wrap wrap--post">
     {%- if summary %}
