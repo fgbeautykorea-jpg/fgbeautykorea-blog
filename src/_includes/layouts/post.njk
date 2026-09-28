@@ -40,6 +40,19 @@ layout: layouts/base.njk
     <p class="post__pillar">이 주제의 전체 가이드 → <a href="{{ pillar.url }}">{{ pillar.data.title }}</a></p>
     {%- endif %}
 
+    {%- if series %}
+    {%- set parts = collections.posts | inSeries(series) %}
+    <nav class="series" aria-label="연재 목차">
+      <p class="series__label">SERIES · {{ series_part }}/{{ parts.length }}</p>
+      <p class="series__title">{{ series_title }}</p>
+      <ol>
+        {%- for p in parts %}
+        <li{% if p.page.fileSlug == page.fileSlug %} aria-current="page"{% endif %}><span>{{ p.data.series_part }}부</span>{% if p.page.fileSlug == page.fileSlug %}<strong>{{ p.data.title }}</strong>{% else %}<a href="{{ p.url }}">{{ p.data.title }}</a>{% endif %}</li>
+        {%- endfor %}
+      </ol>
+    </nav>
+    {%- endif %}
+
     {%- if sections.length > 2 %}
     <nav class="toc" aria-label="목차">
       <p class="toc__title">CONTENTS</p>
@@ -50,6 +63,15 @@ layout: layouts/base.njk
     <div class="prose">
       {{ content | safe }}
     </div>
+
+    {%- if series %}
+    {%- set prev = null %}{% set next = null %}
+    {%- for p in parts %}{% if p.data.series_part == series_part - 1 %}{% set prev = p %}{% endif %}{% if p.data.series_part == series_part + 1 %}{% set next = p %}{% endif %}{% endfor %}
+    <nav class="series-nav" aria-label="이전·다음 편">
+      {%- if prev %}<a class="series-nav__prev" href="{{ prev.url }}"><span>← {{ prev.data.series_part }}부 이전 편</span>{{ prev.data.title }}</a>{% else %}<span></span>{% endif %}
+      {%- if next %}<a class="series-nav__next" href="{{ next.url }}"><span>{{ next.data.series_part }}부 다음 편 →</span>{{ next.data.title }}</a>{% endif %}
+    </nav>
+    {%- endif %}
 
     {%- if author and author.bio %}
     <aside class="author-box" aria-label="작성자">

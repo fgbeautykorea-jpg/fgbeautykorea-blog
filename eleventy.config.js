@@ -73,6 +73,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("inCategory", (posts, id) => (posts || []).filter((p) => p.data.category === id));
   eleventyConfig.addFilter("byAuthor", (posts, id) => (posts || []).filter((p) => p.data.author === id));
   eleventyConfig.addFilter("byTag", (posts, tag) => (posts || []).filter((p) => (p.data.tags || []).includes(tag)));
+  // Series (연재): all parts of one series in part order.
+  eleventyConfig.addFilter("inSeries", (posts, id) =>
+    (posts || []).filter((p) => p.data.series === id).sort((a, b) => (a.data.series_part || 0) - (b.data.series_part || 0)));
   eleventyConfig.addFilter("bySlug", (posts, slug) => (posts || []).find((p) => p.page.fileSlug === slug));
   eleventyConfig.addFilter("toc", toc);
 

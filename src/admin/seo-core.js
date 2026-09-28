@@ -203,8 +203,8 @@ export function auditPost(data, opts = {}) {
   const imgTotal = imgs.length + (d.thumb_image ? 1 : 0);
   add(G2, "이미지 alt 전부 작성", !imgTotal ? "info" : noAlt ? "fail" : "pass",
     !imgTotal ? "이미지 없음" : noAlt ? `${imgTotal}개 중 ${noAlt}개에 설명(alt)이 없어요 (썸네일 포함)` : `${imgTotal}개 모두 작성`);
-  add(G2, "OG 태그 (title · description · image · url)", d.thumb_image ? "pass" : "warn",
-    d.thumb_image ? "자동 · 공유 이미지 = 썸네일" : `썸네일이 없어 기본 이미지(${defaultOg || "로고"})로 공유돼요`);
+  add(G2, "OG 태그 (title · description · image · url)", "pass",
+    d.thumb_image ? "자동 · 공유 이미지 = 직접 올린 썸네일" : d.thumb_ko || d.thumb_en ? "자동 · 공유 이미지 = LAB NOTE 썸네일" : "자동 · 공유 이미지 = LAB NOTE 썸네일 (썸네일 한글 제목을 채우면 더 좋아요)");
 
   // 3. 구조화 데이터
   const G3 = "3. 구조화 데이터 (JSON-LD)";

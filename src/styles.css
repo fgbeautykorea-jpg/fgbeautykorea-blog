@@ -197,3 +197,26 @@ h1,h2,h3{text-wrap:balance;letter-spacing:-0.02em;line-height:1.35}
   .prose h2[id^="자주"] ~ h3 + p{padding-left:44px}
   .prose h2[id^="자주"] ~ h3::before,.prose h2[id^="자주"] ~ h3 + p::before{left:16px}
 }
+
+/* ── series (연재) box + previous/next */
+.series{margin:0 0 28px;padding:20px 24px;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:12px}
+.series__label{margin:0;font:500 11.5px/1.4 var(--font-mono);letter-spacing:.12em;color:var(--teal-ink)}
+.series__title{margin:4px 0 10px;font-weight:700;font-size:16px}
+.series ol{margin:0;padding:0;list-style:none}
+.series li{display:flex;gap:10px;padding:6px 0;border-top:1px dashed var(--line);font-size:15px}
+.series li span{flex:none;font:500 13px/1.7 var(--font-mono);color:var(--muted)}
+.series li[aria-current] span{color:var(--teal-ink)}
+.series li a{color:var(--ink-2)}
+.series-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:48px}
+.series-nav a{display:flex;flex-direction:column;gap:4px;padding:18px 20px;background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-weight:600;font-size:15px;line-height:1.5}
+.series-nav a:hover{text-decoration:none;border-color:var(--teal)}
+.series-nav span{font:500 12px/1.4 var(--font-mono);letter-spacing:.06em;color:var(--teal-ink)}
+.series-nav__next{text-align:right;grid-column:2}
+@media (max-width:600px){.series-nav{grid-template-columns:1fr}.series-nav__next{grid-column:1}}
+
+/* ── figures: an image followed by an italic caption line in the same paragraph */
+.prose p:has(> img){margin:28px 0;text-align:center}
+.prose p:has(> img) img{display:block;margin:0 auto 10px;background:#fff}
+.prose p:has(> img) em{display:block;font-style:normal;font-size:14px;line-height:1.6;color:var(--muted)}
+.prose p:has(> img) br{display:none}
+.prose p:has(> img) img{margin-bottom:12px}
