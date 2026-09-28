@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+pageKind: author
+pagination:
+  data: authors.items
+  size: 1
+  alias: author
+permalink: "/author/{{ author.id }}/index.html"
+eleventyComputed:
+  title: "{{ author.name }} {{ author.role }} · 천년초와 화장품 성분 연구일지, 작성한 글 모음과 성분별 연구 기록 정리{{ site.seo.title_suffix }}"
+  description: "{{ author.bio if author.bio else (author.name + '이 작성한 ' + site.name + ' 연구일지를 모았습니다. 천년초와 화장품 성분을 자료로 확인하고 성분 단위로 풀어 쓴 글을 최신순으로 볼 수 있습니다. 성분별 작용 원리와 배합 이유, 주의할 점을 기록합니다.') }}"
+---
+{#- Author profile (ProfilePage + Person JSON-LD): who wrote the posts — the E-E-A-T signal. -#}
+{%- set list = collections.posts | byAuthor(author.id) -%}
+<div class="wrap page-head page-head--center">
+  {%- if author.photo %}<span class="avatar avatar--xl" aria-hidden="true"><img src="{{ author.photo }}" alt="" sizes="112px" loading="eager"></span>{% endif %}
+  <h1>{{ author.name }}</h1>
+  {%- if author.role %}<p class="role">{{ author.role }}</p>{% endif %}
+  {%- if author.bio %}<p class="page-head__desc">{{ author.bio }}</p>{% endif %}
+  {%- if author.same_as.length %}<p class="links">{% for l in author.same_as %}<a href="{{ l }}" rel="me noopener" target="_blank">{{ l | replace("https://", "") }}</a>{% endfor %}</p>{% endif %}
+</div>
+<div class="wrap block">
+  <h2 class="block__h">작성한 글 {{ list.length }}편</h2>
+  <div class="grid">
+    {%- for post in list %}
+    {% include "partials/post-card.njk" %}
+    {%- endfor %}
+  </div>
+</div>

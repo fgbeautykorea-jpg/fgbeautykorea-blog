@@ -1,0 +1,85 @@
+---
+layout: layouts/base.njk
+---
+{#- Blog post, "lab note" style. Front matter: title, lab_no, keyword, category, author, date, updated, tags,
+    seo_title, description, excerpt, summary, related, robots, thumb_*. SEO tags / JSON-LD: base.njk › seoHead. -#}
+{%- set author = authors | findById(author) -%}
+{%- set cat = categories | findById(category) -%}
+{%- set pillar = collections.posts | bySlug(cat.pillar) if cat and cat.pillar and cat.pillar != page.fileSlug else null -%}
+{%- set sections = content | toc -%}
+<article class="post">
+  <header class="post__head wrap wrap--post">
+    <nav class="crumbs" aria-label="현재 위치">
+      <a href="/">홈</a><span aria-hidden="true">›</span>
+      {%- if cat %}<a href="/blog/{{ cat.id }}/">{{ cat.name }}</a>{% else %}<a href="/blog/">전체 글</a>{% endif %}
+    </nav>
+    {%- if lab_no %}<p class="post__no">{{ lab_no | labNo }}</p>{% endif %}
+    <h1 class="post__title">{{ title }}</h1>
+    {#- 연구일지 기록표: 작성 · 발행 · 수정 · 분류 · 태그 #}
+    <dl class="record">
+      {%- if author %}<div><dt>작성</dt><dd><a href="/author/{{ author.id }}/" rel="author">{{ author.name }}</a>{% if author.role %}<span class="muted"> · {{ author.role }}</span>{% endif %}</dd></div>{% endif %}
+      <div><dt>발행</dt><dd><time datetime="{{ page.date | dateIso }}">{{ page.date | dateDot }}</time></dd></div>
+      {%- if updated %}<div><dt>수정</dt><dd><time datetime="{{ updated | dateIso }}">{{ updated | dateDot }}</time></dd></div>{% endif %}
+      {%- if cat %}<div><dt>분류</dt><dd><a href="/blog/{{ cat.id }}/">{{ cat.name }}</a></dd></div>{% endif %}
+      <div><dt>읽는 시간</dt><dd>{{ page.inputPath | readMinutes }}분</dd></div>
+      {%- if tags and tags.length %}<div class="record__tags"><dt>태그</dt><dd>{% for t in tags %}<a href="/tags/{{ t | tagSlug }}/">#{{ t }}</a>{% endfor %}</dd></div>{% endif %}
+    </dl>
+  </header>
+
+  {%- if thumb_image %}
+  <figure class="post__cover wrap wrap--wide"><img src="{{ thumb_image }}" alt="{{ thumb_alt or title }}" loading="eager" fetchpriority="high" sizes="(max-width: 960px) 100vw, 960px"></figure>
+  {%- endif %}
+
+  <div class="wrap wrap--post">
+    {%- if summary %}
+    <section class="post__summary" aria-label="핵심 요약">
+      <p class="post__summary-label">SUMMARY · 핵심 요약</p>
+      {{ summary | md | safe }}
+    </section>
+    {%- endif %}
+
+    {%- if pillar %}
+    <p class="post__pillar">이 주제의 전체 가이드 → <a href="{{ pillar.url }}">{{ pillar.data.title }}</a></p>
+    {%- endif %}
+
+    {%- if sections.length > 2 %}
+    <nav class="toc" aria-label="목차">
+      <p class="toc__title">CONTENTS</p>
+      <ol>{% for s in sections %}<li><a href="#{{ s.id }}">{{ s.text }}</a></li>{% endfor %}</ol>
+    </nav>
+    {%- endif %}
+
+    <div class="prose">
+      {{ content | safe }}
+    </div>
+
+    {%- if author and author.bio %}
+    <aside class="author-box" aria-label="작성자">
+      <div>
+        <p class="author-box__name"><a href="/author/{{ author.id }}/">{{ author.name }}</a>{% if author.role %} <span class="muted">{{ author.role }}</span>{% endif %}</p>
+        <p class="author-box__bio">{{ author.bio }}</p>
+      </div>
+    </aside>
+    {%- endif %}
+
+    {%- if site.cta.title %}
+    <aside class="cta">
+      <p class="cta__title">{{ site.cta.title }}</p>
+      <p class="cta__desc">{{ site.cta.desc }}</p>
+      <a href="{{ site.cta.link }}" class="btn">{{ site.cta.label }} <span aria-hidden="true">→</span></a>
+    </aside>
+    {%- endif %}
+  </div>
+
+  {%- set rel = collections.posts | related(page.fileSlug, category, tags, related) %}
+  {%- if rel.length %}
+  <section class="related wrap" aria-labelledby="related-title">
+    <h2 id="related-title" class="block__h">함께 읽으면 좋은 연구일지</h2>
+    <div class="grid">
+      {%- for post in rel %}
+      {% include "partials/post-card.njk" %}
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
+</article>

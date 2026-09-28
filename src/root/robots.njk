@@ -1,0 +1,30 @@
+---
+permalink: /robots.txt
+eleventyExcludeFromCollections: true
+---
+# 검색엔진 전체 허용 (관리자 화면만 제외)
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+# AI 검색·답변 크롤러 명시적 허용 (GEO)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin/
+
+# 네이버 · 다음
+User-agent: Yeti
+User-agent: Daum
+Allow: /
+Disallow: /admin/
+
+Sitemap: {{ site.url | safe }}/sitemap.xml

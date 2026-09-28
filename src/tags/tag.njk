@@ -1,0 +1,23 @@
+---
+layout: layouts/base.njk
+pageKind: tag
+pagination:
+  data: collections.tagList
+  size: 1
+  alias: tag
+permalink: "/tags/{{ tag | tagSlug }}/index.html"
+eleventyComputed:
+  title: "#{{ tag }} 태그 글 모음{{ site.seo.title_suffix }}"
+  description: "{{ site.name }}에서 #{{ tag }} 태그가 붙은 글을 모았습니다."
+---
+{#- Tag pages are filter pages: always noindex, follow (lib/seo.js) and left out of the sitemap. -#}
+<div class="wrap page-head">
+  <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true">›</span><a href="/blog/">전체 글</a><span aria-hidden="true">›</span><span>#{{ tag }}</span></nav>
+  <h1>#{{ tag }}</h1>
+</div>
+<h2 class="sr-only">글 목록</h2>
+<div class="wrap grid block">
+  {%- for post in collections.posts | byTag(tag) %}
+  {% include "partials/post-card.njk" %}
+  {%- endfor %}
+</div>

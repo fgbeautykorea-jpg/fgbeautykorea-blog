@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>블로그 관리자</title>
+<link rel="icon" href="/assets/favicon.png">
+</head>
+<body>
+<!-- Decap CMS: reads config.yml next to this file and saves edits to the GitHub repository. -->
+<script src="https://unpkg.com/decap-cms@3.8.3/dist/decap-cms.js"></script>
+<script>
+  CMS.registerPreviewStyle("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+  CMS.registerPreviewStyle("/styles.css");
+</script>
+<!-- 글 미리보기 맨 위의 SEO · AEO · GEO 점검표 (규칙: seo-core.js — 빌드 리포트와 같은 규칙) -->
+<script type="module" src="/admin/seo-preview.js"></script>
+<!-- 사이트 전체 점검 리포트 (빌드할 때마다 새로 만들어짐) -->
+<a href="/admin/seo-report.html" target="_blank" style="position:fixed;left:16px;bottom:16px;z-index:9999;padding:10px 16px;border-radius:99px;background:#111827;color:#fff;font:600 13px/1 system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.2)">SEO 리포트</a>
+</body>
+</html>

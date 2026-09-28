@@ -1,0 +1,25 @@
+---
+layout: layouts/base.njk
+pageKind: blog
+permalink: /blog/index.html
+eleventyComputed:
+  title: "FG BEAUTY 블로그 전체 글 · 천년초 성분, 피부 고민별 스킨케어, 제품 이야기 모음{{ site.seo.title_suffix }}"
+  description: "{{ site.name }}에 올라온 모든 글을 최신순으로 모았습니다. 한국 토종 선인장 천년초 성분 이야기, 피부 고민별 스킨케어 가이드, FG BEAUTY 제품 사용법과 브랜드 소식을 카테고리별로 골라 읽을 수 있습니다."
+---
+<div class="wrap page-head">
+  <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true">›</span><span>전체 글</span></nav>
+  <h1>전체 글</h1>
+  <p class="page-head__desc">총 {{ collections.posts.length }}편</p>
+  <nav class="chips" aria-label="카테고리">
+    <a href="/blog/" aria-current="page">전체</a>
+    {%- for c in categories.items %}<a href="/blog/{{ c.id }}/">{{ c.name }}</a>{% endfor %}
+  </nav>
+</div>
+<h2 class="sr-only">글 목록</h2>
+<div class="wrap grid block">
+  {%- for post in collections.posts %}
+  {% include "partials/post-card.njk" %}
+  {%- else %}
+  <p>아직 글이 없습니다.</p>
+  {%- endfor %}
+</div>

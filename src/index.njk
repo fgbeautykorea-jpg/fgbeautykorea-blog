@@ -1,0 +1,58 @@
+---
+layout: layouts/base.njk
+pageKind: home
+permalink: /index.html
+---
+{#- Home: brand intro, latest lab note, one block per category (pillar guide first), all latest posts.
+    Title/description: 관리자 › 설정 › 사이트 설정. -#}
+{%- set latest = collections.posts[0] -%}
+<section class="hero wrap">
+  <p class="hero__eyebrow">FG BEAUTY KOREA · LAB NOTES</p>
+  <h1 class="hero__title">{{ site.name }}</h1>
+  <p class="hero__en">the Finest Ground for Skins</p>
+  <p class="hero__desc">{{ site.tagline }}</p>
+</section>
+
+{%- if latest %}
+<section class="wrap block" aria-labelledby="featured">
+  <h2 id="featured" class="sr-only">최신 연구일지</h2>
+  <a class="feature" href="{{ latest.url }}">
+    <div class="feature__img"><img src="{{ latest.data.thumb_image or site.seo.og_image }}" alt="{{ latest.data.thumb_alt or latest.data.title }}" loading="eager" sizes="(max-width: 900px) 100vw, 620px"></div>
+    <div class="feature__body">
+      <p class="card__label">{% if latest.data.lab_no %}<span>{{ latest.data.lab_no | labNo }}</span>{% endif %}<span>최신 글</span></p>
+      <p class="feature__title">{{ latest.data.title }}</p>
+      <p class="feature__desc">{{ latest | postDesc }}</p>
+      <span class="card__more">자세히 보기 <span aria-hidden="true">→</span></span>
+    </div>
+  </a>
+</section>
+{%- endif %}
+
+{%- for c in categories.items %}
+{%- set list = collections.posts | inCategory(c.id) %}
+{%- if list.length %}
+{%- set pillar = collections.posts | bySlug(c.pillar) if c.pillar else null %}
+<section class="wrap block" aria-labelledby="cat-{{ c.id }}">
+  <div class="block__head">
+    <h2 id="cat-{{ c.id }}">{{ c.name }}</h2>
+    <a href="/blog/{{ c.id }}/" class="more">전체 보기 →</a>
+  </div>
+  {%- if pillar %}
+  <a class="pillar" href="{{ pillar.url }}">
+    <span class="pillar__label">전체 가이드</span>
+    <span class="pillar__title">{{ pillar.data.title }}</span>
+    <span class="pillar__desc">{{ pillar | postDesc }}</span>
+  </a>
+  {%- endif %}
+  <div class="grid">
+    {%- for post in list %}{% if not pillar or post.url != pillar.url %}{% if loop.index <= 3 %}
+    {% include "partials/post-card.njk" %}
+    {%- endif %}{% endif %}{% endfor %}
+  </div>
+</section>
+{%- endif %}
+{%- endfor %}
+
+{%- if not latest %}
+<section class="wrap block"><p>아직 글이 없습니다.</p></section>
+{%- endif %}

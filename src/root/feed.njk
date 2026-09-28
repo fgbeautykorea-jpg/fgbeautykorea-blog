@@ -1,0 +1,36 @@
+---
+permalink: /feed.xml
+eleventyExcludeFromCollections: true
+---
+{#- RSS 2.0 — 네이버 서치어드바이저 · 구독용. noindex 글은 빠짐. -#}
+{%- set u = site.url -%}
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>{{ site.name | xml | safe }}</title>
+  <link>{{ u }}/</link>
+  <description>{{ site.description | xml | safe }}</description>
+  <language>ko</language>
+  <atom:link href="{{ u }}/feed.xml" rel="self" type="application/rss+xml"/>
+  {%- if collections.indexablePosts.length %}
+  <lastBuildDate>{{ collections.indexablePosts[0].date | rfc822 }}</lastBuildDate>
+  {%- endif %}
+  {%- for p in collections.indexablePosts %}
+  {%- set a = authors | findById(p.data.author) %}
+  {%- set c = categories | findById(p.data.category) %}
+  <item>
+    <title>{{ p.data.title | xml | safe }}</title>
+    <link>{{ u }}{{ p.url }}</link>
+    <guid isPermaLink="true">{{ u }}{{ p.url }}</guid>
+    <pubDate>{{ p.date | rfc822 }}</pubDate>
+    {%- if a %}
+    <dc:creator>{{ a.name | xml | safe }}</dc:creator>
+    {%- endif %}
+    {%- if c %}
+    <category>{{ c.name | xml | safe }}</category>
+    {%- endif %}
+    <description>{{ p | postDesc | xml | safe }}</description>
+  </item>
+  {%- endfor %}
+</channel>
+</rss>

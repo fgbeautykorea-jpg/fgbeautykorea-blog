@@ -1,0 +1,17 @@
+{
+  "name": "seo-geo-blog",
+  "private": true,
+  "type": "module",
+  "description": "SEO/AEO/GEO 최적화 단독 블로그 — Eleventy 정적 빌드 + Decap CMS 관리자",
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve",
+    "cms": "decap-server"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "@11ty/eleventy-img": "^7.0.0",
+    "decap-server": "^3.3.1",
+    "markdown-it": "^14.1.0"
+  }
+}

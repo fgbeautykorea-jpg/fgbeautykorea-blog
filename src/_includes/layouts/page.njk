@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+---
+{#- Plain text page (소개, 개인정보처리방침 등). Front matter: title, heading, description, robots; body is Markdown. -#}
+<article class="post wrap wrap--post">
+  <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true">›</span><span>{{ heading or title }}</span></nav>
+  <h1 class="post__title">{{ heading or title }}</h1>
+  <div class="prose">
+    {{ content | safe }}
+  </div>
+  {%- if pageKind == "about" %}
+  {%- set o = site.publisher %}
+  <section class="facts" aria-labelledby="facts-title">
+    <h2 id="facts-title">운영 정보</h2>
+    <dl>
+      {%- if o.legal_name %}<div><dt>운영사</dt><dd>{{ o.legal_name }}</dd></div>{% endif %}
+      {%- if o.ceo %}<div><dt>대표</dt><dd>{{ o.ceo }}</dd></div>{% endif %}
+      {%- if o.founded %}<div><dt>설립일</dt><dd>{{ o.founded }}</dd></div>{% endif %}
+      {%- if o.address %}<div><dt>주소</dt><dd>{{ o.address }}</dd></div>{% endif %}
+      {%- if o.email %}<div><dt>이메일</dt><dd><a href="mailto:{{ o.email }}">{{ o.email }}</a></dd></div>{% endif %}
+      {%- if o.homepage %}<div><dt>홈페이지</dt><dd><a href="{{ o.homepage }}">{{ o.homepage }}</a></dd></div>{% endif %}
+    </dl>
+  </section>
+  <section class="facts" aria-labelledby="writers-title">
+    <h2 id="writers-title">작성자</h2>
+    <ul>{% for a in authors.items %}<li><a href="/author/{{ a.id }}/">{{ a.name }}</a>{% if a.role %} · {{ a.role }}{% endif %}</li>{% endfor %}</ul>
+  </section>
+  {%- endif %}
+</article>

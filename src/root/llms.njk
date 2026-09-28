@@ -1,0 +1,47 @@
+---
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+---
+{#- llms.txt (마크다운): AI가 사이트 구조와 핵심 콘텐츠를 이해하도록 안내. Plain text → every value is `| safe`. -#}
+{%- set u = site.url -%}{%- set o = site.publisher -%}
+# {{ site.name | safe }}
+
+> {{ site.description | oneLine | safe }}
+
+{{ site.seo.llms_intro | safe }}
+
+## 운영 정보
+- 블로그: {{ site.name | safe }} ({{ u | safe }}/)
+- 운영사: {{ (o.legal_name or o.name) | safe }}
+{%- if o.ceo %}
+- 대표: {{ o.ceo | safe }}
+{%- endif %}
+{%- if o.founded %}
+- 설립일: {{ o.founded | safe }}
+{%- endif %}
+{%- if o.address %}
+- 주소: {{ o.address | safe }}
+{%- endif %}
+{%- if o.email %}
+- 이메일: {{ o.email | safe }}
+{%- endif %}
+{%- if o.homepage %}
+- 홈페이지: {{ o.homepage | safe }}
+{%- endif %}
+
+{% if collections.indexablePosts.length %}
+## 작성자
+{% for a in authors.items %}{% if (collections.indexablePosts | byAuthor(a.id)).length %}
+- [{{ a.name | safe }}]({{ u | safe }}/author/{{ a.id | safe }}/): {{ a.role | safe }} — {{ a.bio | oneLine | safe }}
+{%- endif %}{% endfor %}
+{% endif %}
+{% for cat in categories.items %}{% set list = collections.indexablePosts | inCategory(cat.id) %}{% if list.length %}
+## {{ cat.name | safe }}
+{{ cat.desc | oneLine | safe }}
+{% for p in list %}
+- [{{ p.data.title | safe }}]({{ u | safe }}{{ p.url | safe }}): {{ p | postDesc | safe }}
+{%- endfor %}
+{% endif %}{% endfor %}
+## 더 보기
+- [전체 본문 (llms-full.txt)]({{ u | safe }}/llms-full.txt): 모든 글의 본문 마크다운
+- [사이트맵]({{ u | safe }}/sitemap.xml) · [RSS]({{ u | safe }}/feed.xml)

@@ -1,0 +1,24 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+{#- Only indexable pages: thin/noindex posts, empty categories, tag pages and 404 are left out. -#}
+{%- set u = site.url -%}
+{%- set latest = collections.indexablePosts[0] -%}
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>{{ u }}/</loc>{% if latest %}<lastmod>{{ (latest.data.updated or latest.date) | dateIso }}</lastmod>{% endif %}</url>
+  <url><loc>{{ u }}/blog/</loc>{% if latest %}<lastmod>{{ (latest.data.updated or latest.date) | dateIso }}</lastmod>{% endif %}</url>
+  {%- for c in categories.items %}{% set list = collections.indexablePosts | inCategory(c.id) %}{% if list.length %}
+  <url><loc>{{ u }}/blog/{{ c.id }}/</loc><lastmod>{{ list[0].date | dateIso }}</lastmod></url>
+  {%- endif %}{% endfor %}
+  {%- for a in authors.items %}{% set list = collections.indexablePosts | byAuthor(a.id) %}{% if list.length %}
+  <url><loc>{{ u }}/author/{{ a.id }}/</loc><lastmod>{{ list[0].date | dateIso }}</lastmod></url>
+  {%- endif %}{% endfor %}
+  {%- for p in collections.indexablePosts %}
+  <url><loc>{{ u }}{{ p.url }}</loc><lastmod>{{ (p.data.updated or p.date) | dateIso }}</lastmod></url>
+  {%- endfor %}
+  {%- for p in collections.all %}{% if "/pages/" in p.inputPath and not (p.data.robots and "noindex" in p.data.robots) %}
+  <url><loc>{{ u }}{{ p.url }}</loc></url>
+  {%- endif %}{% endfor %}
+</urlset>

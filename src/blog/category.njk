@@ -1,0 +1,38 @@
+---
+layout: layouts/base.njk
+pageKind: category
+pagination:
+  data: categories.items
+  size: 1
+  alias: cat
+permalink: "/blog/{{ cat.id }}/index.html"
+eleventyComputed:
+  title: "{{ cat.seo_title or (cat.name + ' 실무 가이드 · 핵심 개념과 체크리스트, 사례 글 모음') }}{{ site.seo.title_suffix }}"
+  description: "{{ cat.desc }}"
+---
+{#- Category hub (pillar + cluster): the pillar guide first, then every post in the category.
+    A category with no posts is noindex (lib/seo.js) so it never shows up as a thin page. -#}
+{%- set list = collections.posts | inCategory(cat.id) -%}
+{%- set pillar = collections.posts | bySlug(cat.pillar) if cat.pillar else null -%}
+<div class="wrap page-head">
+  <nav class="crumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true">›</span><span>{{ cat.name }}</span></nav>
+  <h1>{{ cat.name }}</h1>
+  <p class="page-head__desc">{{ cat.desc }}</p>
+</div>
+<div class="wrap block">
+  {%- if pillar %}
+  <a class="pillar" href="{{ pillar.url }}">
+    <span class="pillar__label">전체 가이드</span>
+    <span class="pillar__title">{{ pillar.data.title }}</span>
+    <span class="pillar__desc">{{ pillar | postDesc }}</span>
+  </a>
+  {%- endif %}
+  <h2 class="sr-only">{{ cat.name }} 글 목록</h2>
+  <div class="grid">
+    {%- for post in list %}{% if not pillar or post.url != pillar.url %}
+    {% include "partials/post-card.njk" %}
+    {%- endif %}{% else %}
+    <p>아직 글이 없습니다.</p>
+    {%- endfor %}
+  </div>
+</div>

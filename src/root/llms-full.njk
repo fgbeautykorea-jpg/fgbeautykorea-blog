@@ -1,0 +1,22 @@
+---
+permalink: /llms-full.txt
+eleventyExcludeFromCollections: true
+---
+{#- Plain text: every value is `| safe` so & < > are not HTML-escaped. -#}
+{%- set u = site.url -%}
+# {{ site.name | safe }} — 전체 본문
+
+> {{ site.description | oneLine | safe }}
+{% for p in collections.indexablePosts %}{% set a = authors | findById(p.data.author) %}
+---
+
+# {{ p.data.title | safe }}
+
+- 주소: {{ u | safe }}{{ p.url | safe }}
+- 작성자: {{ (a.name if a else site.publisher.name) | safe }}{% if a and a.role %} ({{ a.role | safe }}){% endif %}
+- 발행일: {{ p.date | dateIso }}{% if p.data.updated %} · 수정일: {{ p.data.updated | dateIso }}{% endif %}
+
+{{ p | postDesc | safe }}
+
+{{ p.inputPath | postBody | safe }}
+{% endfor %}
