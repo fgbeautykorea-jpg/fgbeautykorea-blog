@@ -24,6 +24,17 @@
 {#- dynamic subset: only the Korean glyphs a page uses are downloaded (faster LCP) #}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/styles.css">
+<style>
+.lang-switch{order:3;display:flex;align-items:center;gap:2px;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.04em}
+.lang-switch button{background:none;border:0;padding:6px 6px;cursor:pointer;color:var(--muted);font:inherit}
+.lang-switch button[aria-pressed="true"]{color:var(--teal-ink);text-decoration:underline;text-underline-offset:4px}
+.lang-switch span{color:var(--line)}
+@media (max-width:600px){.lang-switch{order:1;margin-left:auto}.site-nav{order:2}}
+#google_translate_element{display:none}
+body{top:0!important;position:static!important}
+.skiptranslate iframe,.goog-te-banner-frame,#goog-gt-tt,.goog-te-balloon-frame,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf{display:none!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">본문 바로가기</a>
@@ -38,6 +49,9 @@
       <a href="{{ n.link }}"{% if page.url == n.link %} aria-current="page"{% endif %}>{{ n.label }}</a>
       {%- endfor %}
     </nav>
+    <div class="lang-switch notranslate" translate="no" role="group" aria-label="Language">
+      <button type="button" data-lang="ko" aria-pressed="true">KO</button><span aria-hidden="true">|</span><button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
   </div>
 </header>
 
@@ -72,5 +86,35 @@
     </p>
   </div>
 </footer>
+<div id="google_translate_element"></div>
+<script>
+(function(){
+  var on=/(^|;\s*)googtrans=\/ko\/en/.test(document.cookie);
+  var host=location.hostname, root=host.split('.').slice(-3).join('.');
+  function setCookie(val,expire){
+    var tail=';path=/'+(expire?';expires=Thu, 01 Jan 1970 00:00:00 GMT':'');
+    document.cookie='googtrans='+val+tail;
+    document.cookie='googtrans='+val+tail+';domain='+host;
+    document.cookie='googtrans='+val+tail+';domain=.'+root;
+  }
+  document.querySelectorAll('.lang-switch button').forEach(function(b){
+    var en=b.getAttribute('data-lang')==='en';
+    b.setAttribute('aria-pressed', String(en===on));
+    b.addEventListener('click',function(){
+      if(en===on) return;
+      if(en){ setCookie('/ko/en',false); } else { setCookie('',true); }
+      location.reload();
+    });
+  });
+  if(on){
+    window.googleTranslateElementInit=function(){
+      new google.translate.TranslateElement({pageLanguage:'ko',includedLanguages:'en',autoDisplay:false},'google_translate_element');
+    };
+    var s=document.createElement('script');
+    s.src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    s.async=true; document.body.appendChild(s);
+  }
+})();
+</script>
 </body>
 </html>
